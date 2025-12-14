@@ -1,4 +1,5 @@
 # cpp-coding-exercise
+[![C++ Build](https://github.com/DoctorLai/cpp-coding-exercise/actions/workflows/ci.yml/badge.svg)](https://github.com/DoctorLai/cpp-coding-exercise/actions/workflows/ci.yml)
 
 A collection of **modern C++ coding examples** and small exercises, focused on correctness, clarity, and real‑world patterns.
 
