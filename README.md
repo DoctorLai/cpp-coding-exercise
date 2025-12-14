@@ -12,12 +12,13 @@ This repository is intended as:
 
 Examples include (and will expand to):
 
-* Thread‑safe queue
+* [thread-safe-queue](./thread-safe-queue/)
+* Smart pointers
+    * [unique-ptr-basics](./unique-ptr-basics/)
 * Lock‑free / wait‑free data structures
 * Atomics and memory ordering
 * RAII and ownership patterns
 * Performance‑oriented C++ idioms
-* Smart pointers
 
 ---
 
