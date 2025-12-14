@@ -23,21 +23,15 @@ jobs:
           sudo apt-get install -y build-essential g++ clang
 
       # 3. Build and run all examples dynamically
-      - name: Build and run examples
+      - name: Build and Run
         run: |
-          # Detect folders with Makefile
-          folders=$(find . -maxdepth 1 -type d -not -name '.' -exec test -f '{}/Makefile' \; -print | sed 's|^\./||')
-          
-          # List detected folders
-          echo "Detected example folders: $folders"
-
-          # Loop over each folder and sanitizer
-          for folder in $folders; do
-            for san in address thread undefined; do
-              echo "=== Building $folder with sanitizer $san ==="
-              make -C $folder SANITIZE=$san
-              
-              echo "=== Running $folder with sanitizer $san ==="
-              make -C $folder SANITIZE=$san run
-            done
+          for san in address thread undefined; do
+            echo "=== Building all examples with sanitizer $san ==="
+            make SANITIZE=$san
+            echo "=== Running all examples with sanitizer $san ==="
+            make run
           done
+
+      - name: Clean up build artifacts
+        run: |
+          make clean
