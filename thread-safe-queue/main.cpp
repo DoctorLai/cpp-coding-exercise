@@ -5,19 +5,23 @@
 #include <memory>
 #include <thread>
 
-template <typename T>
-class ThreadSafeQueue {
-public:
+template <typename T> class ThreadSafeQueue
+{
+  public:
     ThreadSafeQueue() = default;
     ~ThreadSafeQueue() = default;
 
-    void enqueue(T item) {
+    void
+    enqueue(T item)
+    {
         std::lock_guard<std::mutex> lock(mutex_);
         queue_.push(std::move(item));
         cond_var_.notify_one();
     }
 
-    T dequeue() {
+    T
+    dequeue()
+    {
         std::unique_lock<std::mutex> lock(mutex_);
         cond_var_.wait(lock, [this]() { return !queue_.empty(); });
         T item = queue_.front();
@@ -25,23 +29,29 @@ public:
         return item;
     }
 
-    bool isEmpty() const {
+    bool
+    isEmpty() const
+    {
         std::lock_guard<std::mutex> lock(mutex_);
         return queue_.empty();
     }
 
-    size_t size() const {
+    size_t
+    size() const
+    {
         std::lock_guard<std::mutex> lock(mutex_);
         return queue_.size();
     }
 
-private:
+  private:
     mutable std::mutex mutex_;
     std::condition_variable cond_var_;
     std::queue<T> queue_;
 };
 
-int main() {
+int
+main()
+{
     ThreadSafeQueue<int> tsQueue;
 
     // Enqueue some items

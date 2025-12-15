@@ -20,9 +20,14 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential g++ clang
+          sudo apt-get install -y build-essential g++ clang clang-format
 
-      # 3. Build and run all examples dynamically
+      # 3. Clang-format check
+      - name: Clang-format Check
+        run: |
+          ./clang-check.sh *.cpp *.hpp *.c *.h
+
+      # 4. Build and run all examples dynamically
       - name: Build and Run
         run: |
           for san in address thread undefined; do

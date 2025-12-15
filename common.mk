@@ -26,7 +26,7 @@ endif
 # --------------------------
 # Compiler / Linker flags
 # --------------------------
-CXXFLAGS := -std=c++20 -Wall -Wextra $(OPTFLAGS) $(SAN_FLAGS)
+CXXFLAGS := -std=c++23 -Wall -Wextra $(OPTFLAGS) $(SAN_FLAGS)
 LDFLAGS  := $(SAN_FLAGS)
 
 # --------------------------

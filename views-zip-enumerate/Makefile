@@ -1,7 +1,10 @@
-# shared compiler configuration
+# pull in shared compiler settings
 include ../common.mk
 
-TARGET := unique_ptr_basics
+# per-example flags
+CXXFLAGS += -pthread
+
+TARGET := views-zip-enumerate
 SRCS   := main.cpp
 OBJS   := $(SRCS:.cpp=.o)
 

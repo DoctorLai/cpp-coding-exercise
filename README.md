@@ -16,6 +16,8 @@ Examples include (and will expand to):
 * Smart pointers
     * [unique-ptr-basics](./unique-ptr-basics/)
 * Lock‑free / wait‑free data structures
+* Views
+    * [views-zip-enumerate](./views-zip-enumerate/)
 * Atomics and memory ordering
 * RAII and ownership patterns
 * Performance‑oriented C++ idioms
@@ -101,7 +103,7 @@ Common compiler settings live in [common.mk](./common.mk):
 
 ```make
 CXX      := g++
-CXXFLAGS := -std=c++20 -Wall -Wextra
+CXXFLAGS := -std=c++23 -Wall -Wextra
 ```
 
 Individual examples may extend this, e.g.:
@@ -131,6 +133,15 @@ make SANITIZE=
 
 ---
 
+## Clang Format
+The `clang-format` is used to ensure the code format.
+
+```bash
+./clang-check.sh *.cpp *.hpp
+```
+
+---
+
 ## Continuous Integration
 
 GitHub Actions automatically builds all examples on:
@@ -140,11 +151,16 @@ GitHub Actions automatically builds all examples on:
 
 The CI setup requires **no updates** when new example folders are added.
 
+The CI will perform:
+1. `./clang-check.sh *.cpp *.hpp`
+2. `make SANITIZE=[address, thread, undefined]`
+3. `make run`
+
 ---
 
 ## Toolchain
 
-* C++20
+* C++23
 * GNU Make
 * GCC / Clang (CI currently uses GCC)
 * Linux (Ubuntu)
