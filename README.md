@@ -16,6 +16,8 @@ Examples include (and will expand to):
 * Smart pointers
     * [unique-ptr-basics](./unique-ptr-basics/)
 * Lock‑free / wait‑free data structures
+* Views
+    * [views-zip-enumerate](./views-zip-enumerate/)
 * Atomics and memory ordering
 * RAII and ownership patterns
 * Performance‑oriented C++ idioms
