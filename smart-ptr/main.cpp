@@ -2,13 +2,16 @@
 #include <cassert>
 #include "smart_ptr.h"
 
-struct Test {
+struct Test
+{
     int x;
     Test(int v) : x(v) { std::cout << "Test(" << x << ") constructed\n"; }
     ~Test() { std::cout << "Test(" << x << ") destroyed\n"; }
 };
 
-int main() {
+int
+main()
+{
     std::cout << "--- Testing SharedPtr ---\\n";
     {
         SharedPtr<Test> sp1(new Test(10));
@@ -38,15 +41,15 @@ int main() {
         SharedPtr<Test> sp = MakeShared<Test>(30);
         WeakPtr<Test> wp = sp;
         assert(!wp.expired());
-        
+
         SharedPtr<Test> sp2 = wp.lock();
         assert(sp2);
         assert(sp2->x == 30);
         assert(sp.use_count() == 2);
-        
+
         sp2 = nullptr; // release one reference
         assert(sp.use_count() == 1);
-        
+
         sp = nullptr; // release last reference
         assert(wp.expired());
         assert(wp.lock().get() == nullptr);
