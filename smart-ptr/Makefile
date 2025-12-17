@@ -9,6 +9,9 @@ all: $(TARGET)
 $(TARGET): $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)
 
+run: $(TARGET)
+	./$(TARGET) $(ARGS)
+
 clean:
 	rm -f $(TARGET)
 
