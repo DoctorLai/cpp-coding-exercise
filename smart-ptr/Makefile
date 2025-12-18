@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++23 -Wall -Wextra -g -I.
 
-TARGET = main
+TARGET := $(notdir $(CURDIR))
 SRCS = main.cpp
 
 all: $(TARGET)

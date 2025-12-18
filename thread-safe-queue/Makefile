@@ -4,7 +4,7 @@ include ../common.mk
 # per-example flags
 CXXFLAGS += -pthread
 
-TARGET := thread_safe_queue
+TARGET := $(notdir $(CURDIR))
 SRCS   := main.cpp
 OBJS   := $(SRCS:.cpp=.o)
 

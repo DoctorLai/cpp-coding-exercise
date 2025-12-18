@@ -4,6 +4,7 @@ include ../common.mk
 # per-example flags
 CXXFLAGS += -pthread
 
+## get it from the folder name
 TARGET := $(notdir $(CURDIR))
 SRCS   := main.cpp
 OBJS   := $(SRCS:.cpp=.o)
