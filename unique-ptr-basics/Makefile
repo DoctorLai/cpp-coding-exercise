@@ -1,7 +1,7 @@
 # shared compiler configuration
 include ../common.mk
 
-TARGET := unique_ptr_basics
+TARGET := $(notdir $(CURDIR))
 SRCS   := main.cpp
 OBJS   := $(SRCS:.cpp=.o)
 

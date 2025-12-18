@@ -15,6 +15,7 @@ Examples include (and will expand to):
 * [thread-safe-queue](./thread-safe-queue/)
 * Smart pointers
     * [unique-ptr-basics](./unique-ptr-basics/)
+    * [smart-ptr](./smart-ptr/)
 * Lock‑free / wait‑free data structures
 * Views
     * [views-zip-enumerate](./views-zip-enumerate/)
@@ -22,6 +23,8 @@ Examples include (and will expand to):
 * Folding
     * [fold-left-fold-right](./fold-left-fold-right/)
 * RAII and ownership patterns
+* Parallelism
+    * [parallel-transform](./parallel-transform/)
 * Performance‑oriented C++ idioms
 
 ---
