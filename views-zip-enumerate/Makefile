@@ -2,7 +2,7 @@
 include ../common.mk
 
 # per-example flags
-CXXFLAGS += -pthread
+# CXXFLAGS += -pthread
 
 TARGET := $(notdir $(CURDIR))
 SRCS   := main.cpp

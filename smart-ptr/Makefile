@@ -1,5 +1,8 @@
-CXX = g++
-CXXFLAGS = -std=c++23 -Wall -Wextra -g -I.
+# pull in shared compiler settings
+include ../common.mk
+
+# per-example flags
+# CXXFLAGS += -pthread
 
 TARGET := $(notdir $(CURDIR))
 SRCS = main.cpp

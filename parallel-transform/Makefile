@@ -2,7 +2,7 @@
 include ../common.mk
 
 # per-example flags
-CXXFLAGS += -pthread
+# CXXFLAGS += -pthread
 
 ## get it from the folder name
 TARGET := $(notdir $(CURDIR))

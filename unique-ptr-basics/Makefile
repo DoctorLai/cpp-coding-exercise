@@ -1,6 +1,9 @@
 # shared compiler configuration
 include ../common.mk
 
+# per-example flags
+# CXXFLAGS += -pthread
+
 TARGET := $(notdir $(CURDIR))
 SRCS   := main.cpp
 OBJS   := $(SRCS:.cpp=.o)
