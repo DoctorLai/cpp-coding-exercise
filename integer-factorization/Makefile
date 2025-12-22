@@ -2,9 +2,11 @@
 include ../common.mk
 
 # per-example flags
-CXXFLAGS += -pthread
+# CXXFLAGS += -pthread
 
+## get it from the folder name
 TARGET := $(notdir $(CURDIR))
+## all *.cpp files in this folder
 SRCS   := $(wildcard *.cpp)
 OBJS   := $(SRCS:.cpp=.o)
 

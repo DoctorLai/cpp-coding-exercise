@@ -26,6 +26,11 @@ run:
 	@for dir in $(SUBDIRS); do \
 		echo "=== Running $$dir ==="; \
 		(cd $$dir && $(MAKE) SANITIZE=$(SANITIZE) run) || exit 1; \
+		## Run tests if present and fail the test if tests fail \
+		if [ -f "$$dir/tests.sh" ]; then \
+			echo "=== Running tests in $$dir ==="; \
+			(cd $$dir && ./tests.sh) || exit 1; \
+		fi; \
 	done
 
 # --------------------------

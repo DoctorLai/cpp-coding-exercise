@@ -26,6 +26,8 @@ Examples include (and will expand to):
 * Parallelism
     * [parallel-transform](./parallel-transform/)
 * Performance‑oriented C++ idioms
+* Algorithms
+    * [integer-factorization](./integer-factorization/)
 
 ---
 
@@ -171,7 +173,7 @@ The CI setup requires **no updates** when new example folders are added.
 The CI will perform:
 1. `./clang-check.sh *.cpp *.hpp`
 2. `make SANITIZE=[address, thread, undefined]`
-3. `make run`
+3. `make run` which will run `make run` for each project and `./tests.sh` if it is present.
 
 ---
 

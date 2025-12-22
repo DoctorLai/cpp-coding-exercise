@@ -5,7 +5,7 @@ include ../common.mk
 # CXXFLAGS += -pthread
 
 TARGET := $(notdir $(CURDIR))
-SRCS   := main.cpp
+SRCS   := $(wildcard *.cpp)
 OBJS   := $(SRCS:.cpp=.o)
 
 all: $(TARGET)

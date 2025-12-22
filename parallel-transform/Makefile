@@ -6,7 +6,7 @@ include ../common.mk
 
 ## get it from the folder name
 TARGET := $(notdir $(CURDIR))
-SRCS   := main.cpp
+SRCS   := $(wildcard *.cpp)
 OBJS   := $(SRCS:.cpp=.o)
 
 all: $(TARGET)

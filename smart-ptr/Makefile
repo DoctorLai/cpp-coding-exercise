@@ -4,18 +4,27 @@ include ../common.mk
 # per-example flags
 # CXXFLAGS += -pthread
 
+## get it from the folder name
 TARGET := $(notdir $(CURDIR))
-SRCS = main.cpp
+SRCS   := $(wildcard *.cpp)
+OBJS   := $(SRCS:.cpp=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 run: $(TARGET)
 	./$(TARGET) $(ARGS)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(OBJS) $(TARGET)
 
-.PHONY: all clean
+# Delegates to top-level Makefile
+check-format:
+	$(MAKE) -f ../Makefile check-format DIR=$(CURDIR)
+
+.PHONY: all clean run check-format
