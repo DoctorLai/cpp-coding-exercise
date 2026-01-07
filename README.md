@@ -8,7 +8,7 @@ This repository is intended as:
 * A interview‑prep playground
 * A reference for **concurrency, synchronization, low‑level and modern C++ techniques**
 * A growing set of **self‑contained, buildable examples**
-* A collection of more useful examples than leetcode puzzles.
+* A collection of more useful examples (and CLI tools) than leetcode puzzles.
 
 Examples include (and will expand to):
 
@@ -28,6 +28,8 @@ Examples include (and will expand to):
 * Performance‑oriented C++ idioms
 * Algorithms
     * [integer-factorization](./integer-factorization/)
+    * Encoding
+        * [rot47](./rot47/)
 * OOP
     * [virtual-interface](./virtual-interface/)
 
