@@ -26,6 +26,8 @@ Examples include (and will expand to):
 * Parallelism
     * [parallel-transform](./parallel-transform/)
 * Performance‑oriented C++ idioms
+* STL and ranges:
+    * [ranges-find-in-vector-string](./ranges-find-in-vector-string/)
 * Algorithms
     * [integer-factorization](./integer-factorization/)
     * Encoding
