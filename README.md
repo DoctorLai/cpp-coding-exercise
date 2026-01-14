@@ -32,6 +32,7 @@ Examples include (and will expand to):
         * [rot47](./rot47/)
 * OOP
     * [virtual-interface](./virtual-interface/)
+    * [oop-with-exception](./oop-with-exception/)
 
 ---
 
