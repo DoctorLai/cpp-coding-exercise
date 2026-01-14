@@ -30,6 +30,8 @@ Examples include (and will expand to):
     * [integer-factorization](./integer-factorization/)
     * Encoding
         * [rot47](./rot47/)
+* Data Structures
+    * [map-with-unknown-key](./map-with-unknown-key/)
 * OOP
     * [virtual-interface](./virtual-interface/)
     * [oop-with-exception](./oop-with-exception/)
@@ -62,6 +64,12 @@ cpp-coding-exercise/
 ---
 
 ## Building
+
+### C++ Version
+```bash
+sudo apt update
+sudo apt install g++-14
+```
 
 ### Build everything
 
