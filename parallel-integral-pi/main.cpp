@@ -1,14 +1,11 @@
-/*
-    pi = \int 0^1 \frac{4}{1+x^2} dx    
-    this demo computes pi using the trapezoidal rule in parallel aka. multithreaded
-*/
-
-#include <iostream>
+#include <algorithm>
 #include <cstdlib>
+#include <iostream>
 #include <thread>
 #include <vector>
 
-double f(double x)
+double
+f(double x)
 {
     return 4.0 / (1.0 + x * x);
 }
@@ -16,7 +13,7 @@ double f(double x)
 int
 main(int argc, char* argv[])
 {
-    long long iterations = 10000000000;
+    long long iterations = 1000000;
     if (argc > 1) {
         iterations = std::atoll(argv[1]);
     }
@@ -25,36 +22,47 @@ main(int argc, char* argv[])
         threads = std::atoi(argv[2]);
     }
 
-    // compute the width of each trapezoid
-    double h = 1.0 / static_cast<double>(iterations);
-    // compute the area of each trapezoid in parallel
-    double sum = 0.0;
-    // create a vector of threads
+    if (iterations <= 0 || threads <= 0) {
+        std::cerr << "iterations and threads must be positive integers\n";
+        return 1;
+    }
+
+    const double h = 1.0 / static_cast<double>(iterations);
+    const long long interior_points = iterations - 1;
+    const int worker_count = static_cast<int>(std::min<long long>(threads, iterations));
+    const long long points_per_thread = interior_points / worker_count;
+    const long long remainder = interior_points % worker_count;
+
     std::vector<std::thread> thread_pool;
-    // create a vector of partial sums
-    std::vector<double> partial_sums(threads, 0.0);
-    for (int t = 0; t < threads; ++t) {
+    thread_pool.reserve(worker_count);
+    std::vector<double> partial_sums(worker_count, 0.0);
+
+    for (int t = 0; t < worker_count; ++t) {
         thread_pool.emplace_back([&, t]() {
-            long long start = t * (iterations / threads);
-            long long end = (t + 1) * (iterations / threads);
+            const long long thread_index = t;
+            const long long start = 1 + thread_index * points_per_thread + std::min(thread_index, remainder);
+            const long long end = start + points_per_thread + (thread_index < remainder ? 1 : 0);
+
+            double local_sum = 0.0;
             for (long long i = start; i < end; ++i) {
-                double x = h * static_cast<double>(i);
-                partial_sums[t] += f(x);
+                const double x = h * static_cast<double>(i);
+                local_sum += 2.0 * f(x);
             }
+            partial_sums[t] = local_sum;
         });
     }
-    // join the threads
+
     for (auto& thread : thread_pool) {
         thread.join();
     }
-    // sum the partial sums
-    for (int t = 0; t < threads; ++t) {
-        // std::cout << "partial sum from thread " << t << " = " << partial_sums[t] << std::endl;
-        sum += partial_sums[t];
+
+    // T_n = (h / 2) * (f(0) + f(1) + 2 * sum of interior points).
+    double sum = f(0.0) + f(1.0);
+    for (const double partial_sum : partial_sums) {
+        sum += partial_sum;
     }
-    // multiply by the width of each trapezoid to get the final result
-    double pi = h * sum;
-    // set precision and print the result
+
+    const double pi = (h / 2.0) * sum;
     std::cout.precision(15);
-    std::cout << "pi = " << pi << std::endl;
+    std::cout << "pi = " << pi << '\n';
 }
