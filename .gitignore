@@ -1,10 +1,34 @@
 # Object files
 *.o
+*.d
+*.gcda
+*.gcno
 
 # Executable
 thread_safe_queue
 unique_ptr_basics
 *.out
+fold-left-fold-right/fold-left-fold-right
+integer-factorization/integer-factorization
+map-with-unknown-key/map-with-unknown-key
+multithread-sum/multithread-sum
+oop-with-exception/oop-with-exception
+parallel-integral-pi/parallel-integral-pi
+parallel-transform/parallel-transform
+pi-monte-carlo/pi-monte-carlo
+pi/pi
+prefix-sum/prefix-sum
+ranges-find-in-vector-string/ranges-find-in-vector-string
+rot47/rot47
+smart-ptr/smart-ptr
+sudoku-solver/sudoku-solver
+thread-safe-queue/thread-safe-queue
+unique-ptr-basics/unique-ptr-basics
+views-zip-enumerate/views-zip-enumerate
+virtual-interface/virtual-interface
+
+# Generated reports
+coverage/
 
 # Backup files
 *~

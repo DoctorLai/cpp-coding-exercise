@@ -6,37 +6,53 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-run:
+  check:
     runs-on: ubuntu-latest
     env:
-      ASAN_OPTIONS: detect_leaks=1  # automatically detect memory leaks
+      ASAN_OPTIONS: detect_leaks=1
     steps:
-      # 1. Checkout repo
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      # 2. Install build tools
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential g++-14 clang clang-format libtbb-dev
+          sudo apt-get install -y g++-14 make clang-format libtbb-dev
 
-      # 3. Clang-format check
-      - name: Clang-format Check
-        run: |
-          ./clang-check.sh *.cpp *.hpp *.c *.h
+      - name: Run all checks
+        run: make check SANITIZERS="address thread undefined"
 
-      # 4. Build and run all examples dynamically
-      - name: Build and Run
-        run: |
-          for san in address thread undefined; do
-            echo "=== Building all examples with sanitizer $san ==="
-            make SANITIZE=$san
-            echo "=== Running all examples with sanitizer $san ==="
-            make run
-          done
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - name: Clean up build artifacts
+      - name: Install coverage tools
         run: |
-          make clean
+          sudo apt-get update
+          sudo apt-get install -y g++-14 make gcovr jq libtbb-dev
+
+      - name: Generate coverage report
+        run: make coverage COVERAGE_MIN=0 COVERAGE_FUNCTION_MIN=0 COVERAGE_BRANCH_MIN=0
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Enforce coverage thresholds
+        run: |
+          jq --exit-status \
+            '.line_percent >= 80 and .function_percent >= 80 and .branch_percent >= 70' \
+            coverage/summary.json
