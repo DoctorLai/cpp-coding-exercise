@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
+  address-and-undefined-sanitizers:
     runs-on: ubuntu-latest
     env:
       ASAN_OPTIONS: detect_leaks=1
@@ -28,7 +28,56 @@ jobs:
           sudo apt-get install -y g++-14 make clang-format libtbb-dev
 
       - name: Run all checks
-        run: make check SANITIZERS="address thread undefined"
+        run: make check SANITIZERS="address undefined"
+
+  thread-sanitizer:
+    runs-on: ubuntu-latest
+    env:
+      TBB_SOURCE_COMMIT: 8b829acc65569019edb896c5150d427f288e8aba
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-14 make cmake ninja-build git
+
+      - name: Build ThreadSanitizer-aware oneTBB
+        run: |
+          tbb_install_prefix="${RUNNER_TEMP}/oneTBB-tsan"
+          git init "${RUNNER_TEMP}/oneTBB-source"
+          git -C "${RUNNER_TEMP}/oneTBB-source" remote add origin https://github.com/uxlfoundation/oneTBB.git
+          git -C "${RUNNER_TEMP}/oneTBB-source" fetch --depth=1 origin "${TBB_SOURCE_COMMIT}"
+          git -C "${RUNNER_TEMP}/oneTBB-source" checkout --detach FETCH_HEAD
+          cmake \
+            -S "${RUNNER_TEMP}/oneTBB-source" \
+            -B "${RUNNER_TEMP}/oneTBB-build" \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_C_COMPILER=gcc-14 \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DCMAKE_INSTALL_PREFIX="${tbb_install_prefix}" \
+            -DCMAKE_INSTALL_LIBDIR=lib \
+            -DTBB_ENABLE_IPO=OFF \
+            -DTBBMALLOC_BUILD=OFF \
+            -DTBB_SANITIZE=thread \
+            -DTBB_STRICT=OFF \
+            -DTBB_TEST=OFF
+          cmake --build "${RUNNER_TEMP}/oneTBB-build" --target install --parallel
+          echo "TBB_INSTALL_PREFIX=${tbb_install_prefix}" >> "${GITHUB_ENV}"
+          echo "CPLUS_INCLUDE_PATH=${tbb_install_prefix}/include" >> "${GITHUB_ENV}"
+          echo "LIBRARY_PATH=${tbb_install_prefix}/lib" >> "${GITHUB_ENV}"
+          echo "LD_LIBRARY_PATH=${tbb_install_prefix}/lib" >> "${GITHUB_ENV}"
+
+      - name: Build with ThreadSanitizer
+        run: make SANITIZE=thread build
+
+      - name: Verify instrumented oneTBB linkage
+        run: ldd parallel-transform/parallel-transform | grep -F "${TBB_INSTALL_PREFIX}/lib/libtbb.so"
+
+      - name: Run with ThreadSanitizer
+        run: make SANITIZE=thread test
 
   coverage:
     runs-on: ubuntu-latest

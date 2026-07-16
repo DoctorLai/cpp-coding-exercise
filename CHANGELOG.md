@@ -17,6 +17,8 @@ The project uses date-based versions because it does not publish a package or re
 ### Changed
 
 - CI now performs clean builds for AddressSanitizer, ThreadSanitizer, and UndefinedBehaviorSanitizer.
+- The CI ThreadSanitizer job now builds a pinned, sanitizer-aware oneTBB to avoid reports caused by an uninstrumented
+	parallel STL backend.
 - UndefinedBehaviorSanitizer findings now terminate the affected test immediately.
 - Local WSL2 checks skip the unsupported GCC ThreadSanitizer runtime by default while native Linux CI retains it.
 - Example link rules now honor shared linker flags.

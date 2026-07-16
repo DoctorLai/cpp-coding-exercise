@@ -191,7 +191,11 @@ make SANITIZE=
 
 GCC ThreadSanitizer cannot reliably reserve its shadow-memory layout under WSL2 and may terminate before an example
 starts with `FATAL: ThreadSanitizer: unexpected memory mapping`. On WSL2, `make check` therefore runs ASan and UBSan by
-default. Native Linux and GitHub Actions continue to run ASan, TSan, and UBSan. `SANITIZERS` can override either default.
+default. Native Linux runs ASan, TSan, and UBSan. `SANITIZERS` can override either default.
+
+The `parallel-transform` example uses libstdc++'s parallel STL backend, which delegates to oneTBB. TSan requires oneTBB
+itself to be sanitizer-aware so that its internal synchronization is visible. The dedicated CI TSan job therefore builds
+the pinned oneTBB release with `TBB_SANITIZE=thread` instead of using Ubuntu's ordinary runtime library.
 
 ---
 
@@ -217,9 +221,9 @@ GitHub Actions builds all examples on:
 
 The CI setup requires **no updates** when new example folders are added.
 
-CI runs `make check SANITIZERS="address thread undefined"`, enforces the documented coverage floors, uploads an HTML
-coverage report, and posts a coverage summary on pull requests. Each sanitizer configuration starts from a clean build
-so compiler flags cannot be silently reused from a previous configuration.
+CI runs ASan and UBSan in one job and TSan with a sanitizer-aware oneTBB build in another. It also enforces the documented
+coverage floors, uploads an HTML coverage report, and posts a coverage summary on pull requests. Each sanitizer
+configuration starts from a clean build so compiler flags cannot be silently reused from a previous configuration.
 
 ---
 
