@@ -1,0 +1,119 @@
+name: Coverage Comment
+
+on:
+  workflow_run:
+    workflows: [C++ CI]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: coverage-comment-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  comment:
+    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download coverage summary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: coverage-report
+          path: coverage-data
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update coverage comment
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          LINE_COVERAGE_THRESHOLD: '80'
+          FUNCTION_COVERAGE_THRESHOLD: '80'
+          BRANCH_COVERAGE_THRESHOLD: '70'
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = JSON.parse(fs.readFileSync('coverage-data/summary.json', 'utf8'));
+
+            function readMetric(prefix, label, threshold) {
+              const percent = Number(summary[`${prefix}_percent`]);
+              const covered = Number(summary[`${prefix}_covered`]);
+              const total = Number(summary[`${prefix}_total`]);
+              const valid = Number.isFinite(percent)
+                && Number.isInteger(covered)
+                && Number.isInteger(total)
+                && percent >= 0
+                && percent <= 100
+                && covered >= 0
+                && total >= covered;
+
+              if (!valid) {
+                throw new Error(`Invalid ${label} coverage summary`);
+              }
+
+              return { label, percent, covered, total, threshold };
+            }
+
+            const metrics = [
+              readMetric('line', 'Lines', Number(process.env.LINE_COVERAGE_THRESHOLD)),
+              readMetric('function', 'Functions', Number(process.env.FUNCTION_COVERAGE_THRESHOLD)),
+              readMetric('branch', 'Branches', Number(process.env.BRANCH_COVERAGE_THRESHOLD)),
+            ];
+            const rows = metrics.map((metric) => {
+              const status = metric.percent >= metric.threshold ? 'PASS' : 'FAIL';
+              return `| ${status} | ${metric.label} | ${metric.percent.toFixed(2)}% (${metric.threshold}% target) | ${metric.covered} / ${metric.total} |`;
+            });
+            const run = context.payload.workflow_run;
+            const associatedPulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              {
+                ...context.repo,
+                commit_sha: run.head_sha,
+                per_page: 100,
+              },
+            );
+            const pull = associatedPulls.find((candidate) =>
+              candidate.state === 'open' && candidate.head.sha === run.head_sha);
+            if (!pull) {
+              core.notice(`No open pull request currently points to ${run.head_sha}`);
+              return;
+            }
+
+            const marker = '<!-- cpp-coverage-report -->';
+            const body = [
+              marker,
+              '## Coverage Report',
+              '',
+              '| Status | Category | Percentage | Covered / Total |',
+              '|:--:|---|---:|---:|',
+              ...rows,
+              '',
+              `[Generated in workflow #${run.run_number}](${run.html_url}) for commit \`${run.head_sha.slice(0, 7)}\` by the C++ coverage workflow.`,
+            ].join('\n');
+
+            const issue_number = pull.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              ...context.repo,
+              issue_number,
+              per_page: 100,
+            });
+            const previous = comments.find((comment) =>
+              comment.user.type === 'Bot' && comment.body.includes(marker));
+
+            if (previous) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: previous.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number,
+                body,
+              });
+            }

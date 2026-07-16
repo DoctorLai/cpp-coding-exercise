@@ -1,16 +1,29 @@
 # cpp-coding-exercise
 [![C++ Build](https://github.com/DoctorLai/cpp-coding-exercise/actions/workflows/ci.yml/badge.svg)](https://github.com/DoctorLai/cpp-coding-exercise/actions/workflows/ci.yml)
+[![Last Commit](https://img.shields.io/github/last-commit/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/commits/main)
+[![License](https://img.shields.io/github/license/DoctorLai/cpp-coding-exercise)](./LICENSE)
+[![Stars](https://img.shields.io/github/stars/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/stargazers)
+[![Code Style](https://img.shields.io/badge/code%20style-clang--format-blue)](./.clang-format)
+[![Commit Activity](https://img.shields.io/github/commit-activity/m/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/graphs/commit-activity)
+[![Watchers](https://img.shields.io/github/watchers/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/watchers)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Repo Size](https://img.shields.io/github/repo-size/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise)
+[![Top Language](https://img.shields.io/github/languages/top/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/search?l=c%2B%2B)
+[![Open PRs](https://img.shields.io/github/issues-pr/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/pulls)
+[![Forks](https://img.shields.io/github/forks/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/forks)
+[![Open Issues](https://img.shields.io/github/issues/DoctorLai/cpp-coding-exercise)](https://github.com/DoctorLai/cpp-coding-exercise/issues)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/DoctorLai/cpp-coding-exercise)
 
-A collection of **modern C++ coding examples** and small exercises, focused on correctness, clarity, and real‑world patterns.
+A collection of **modern C++ coding examples** and small exercises focused on correctness, clarity, and real-world patterns.
 
 This repository is intended as:
 
-* A interview‑prep playground
-* A reference for **concurrency, synchronization, low‑level and modern C++ techniques**
-* A growing set of **self‑contained, buildable examples**
-* A collection of more useful examples (and CLI tools) than leetcode puzzles.
+* An interview-preparation playground
+* A reference for **concurrency, synchronization, low-level, and modern C++ techniques**
+* A growing set of **self-contained, buildable examples**
+* A collection of practical examples and CLI tools rather than puzzle-only solutions
 
-Examples include (and will expand to):
+Current examples include:
 
 * Multithreading
     * [thread-safe-queue](./thread-safe-queue/)
@@ -18,17 +31,13 @@ Examples include (and will expand to):
 * Smart pointers
     * [unique-ptr-basics](./unique-ptr-basics/)
     * [smart-ptr](./smart-ptr/)
-* Lock‑free / wait‑free data structures
 * Views
     * [views-zip-enumerate](./views-zip-enumerate/)
-* Atomics and memory ordering
 * Folding
     * [fold-left-fold-right](./fold-left-fold-right/)
-* RAII and ownership patterns
 * Parallelism
     * [parallel-transform](./parallel-transform/)
     * [parallel-integral-pi](./parallel-integral-pi/)
-* Performance‑oriented C++ idioms
 * STL and ranges:
     * [ranges-find-in-vector-string](./ranges-find-in-vector-string/)
 * Algorithms
@@ -38,7 +47,7 @@ Examples include (and will expand to):
     * [prefix-sum](./prefix-sum/)
     * [sudoku-solver](./sudoku-solver/)
     * [pi-monte-carlo](./pi-monte-carlo/)
-    * [pi](./pi)
+    * [pi](./pi/)
 * Data Structures
     * [map-with-unknown-key](./map-with-unknown-key/)
 * OOP
@@ -53,14 +62,13 @@ Examples include (and will expand to):
 cpp-coding-exercise/
 ├── Makefile              # top-level dispatcher
 ├── common.mk             # shared compiler flags
-├── thread-safe-queue/
+├── <example>/
 │   ├── Makefile
-│   └── main.cpp
-├── <future-example>/
-│   ├── Makefile
-│   └── ...
+│   ├── main.cpp
+│   └── tests.sh           # optional behavior tests
 └── .github/workflows/
-    └── ci.yml            # GitHub Actions CI
+    ├── ci.yml             # builds, sanitizers, tests, and coverage
+    └── coverage-comment.yml
 ```
 
 ### Design principles
@@ -72,13 +80,16 @@ cpp-coding-exercise/
 
 ---
 
-## Building
+## Prerequisites
 
-### C++ Version
 ```bash
 sudo apt update
-sudo apt install g++-14
+sudo apt install g++-14 make clang-format gcovr jq libtbb-dev
 ```
+
+The examples target C++23 and are tested on Ubuntu with GCC 14.
+
+## Building
 
 ### Build everything
 
@@ -105,7 +116,22 @@ Runnable examples expose a `run` target:
 make run
 ```
 
-`make run` on top level will run all built targets.
+Top-level `make run` runs all built targets and each available `tests.sh` script.
+
+## Project commands
+
+```bash
+make build             # Build every example with the selected sanitizer
+make test              # Build as needed, run examples, and execute test scripts
+make format            # Format all C and C++ source files
+make lint              # Check formatting without modifying files
+make coverage          # Generate HTML, XML, JSON, and text coverage reports
+make check             # Run formatting and supported sanitizer builds/tests
+make clean             # Remove binaries, objects, and coverage artifacts
+```
+
+`make coverage` enforces at least 80% line coverage, 80% function coverage, and 70% branch coverage by default.
+Override local thresholds with `COVERAGE_MIN`, `COVERAGE_FUNCTION_MIN`, and `COVERAGE_BRANCH_MIN`.
 
 ---
 
@@ -131,8 +157,8 @@ make clean
 Common compiler settings live in [common.mk](./common.mk):
 
 ```make
-CXX      := g++
-CXXFLAGS := -std=c++23 -Wall -Wextra
+CXX      := g++-14
+CXXFLAGS := -std=c++23 -Wall -Wextra -Werror
 ```
 
 Individual examples may extend this, e.g.:
@@ -143,10 +169,10 @@ CXXFLAGS += -pthread
 
 ---
 
-## Address Sanitizer Check
-The Address Sanitizer is enabled by default to ensure there is no memory leaks or other memory problems.
+## Sanitizers
+AddressSanitizer is enabled by default to detect memory safety problems and leaks.
 
-```make
+```bash
 # Builds with AddressSanitizer automatically
 make
 
@@ -156,46 +182,48 @@ make SANITIZE=thread
 # UndefinedBehaviorSanitizer
 make SANITIZE=undefined
 
+# Select the sanitizer matrix used by make check
+make check SANITIZERS="address thread undefined"
+
 # No sanitizers
 make SANITIZE=
 ```
 
+GCC ThreadSanitizer cannot reliably reserve its shadow-memory layout under WSL2 and may terminate before an example
+starts with `FATAL: ThreadSanitizer: unexpected memory mapping`. On WSL2, `make check` therefore runs ASan and UBSan by
+default. Native Linux runs ASan, TSan, and UBSan. `SANITIZERS` can override either default.
+
+The `parallel-transform` example uses libstdc++'s parallel STL backend, which delegates to oneTBB. TSan requires oneTBB
+itself to be sanitizer-aware so that its internal synchronization is visible. The dedicated CI TSan job therefore builds
+the pinned oneTBB release with `TBB_SANITIZE=thread` instead of using Ubuntu's ordinary runtime library.
+
 ---
 
 ## Clang Format
-The `clang-format` is used to ensure the code format.
+`clang-format` enforces the repository's C++ style.
 
 ```bash
-./clang-check.sh *.cpp *.hpp
+make format            # Apply formatting
+make lint              # Check all example directories
+./clang-check.sh       # Equivalent recursive standalone check
 ```
 
-At top level, you can do:
-
-```make
-make check-format-all
-```
-
-At each example directory, you can do:
-
-```make
-make check-format
-```
+Each example also exposes `make check-format` from its own directory.
 
 ---
 
 ## Continuous Integration
 
-GitHub Actions automatically builds all examples on:
+GitHub Actions builds all examples on:
 
-* Every push
-* Every pull request
+* Pushes to `main`
+* Pull requests targeting `main`
 
 The CI setup requires **no updates** when new example folders are added.
 
-The CI will perform:
-1. `./clang-check.sh *.cpp *.hpp`
-2. `make SANITIZE=[address, thread, undefined]`
-3. `make run` which will run `make run` for each project and `./tests.sh` if it is present.
+CI runs ASan and UBSan in one job and TSan with a sanitizer-aware oneTBB build in another. It also enforces the documented
+coverage floors, uploads an HTML coverage report, and posts a coverage summary on pull requests. Each sanitizer
+configuration starts from a clean build so compiler flags cannot be silently reused from a previous configuration.
 
 ---
 
@@ -203,7 +231,9 @@ The CI will perform:
 
 * C++23
 * GNU Make
-* GCC / Clang (CI currently uses GCC)
+* GCC 14
+* clang-format
+* gcovr
 * Linux (Ubuntu)
 
 ---
@@ -220,6 +250,14 @@ The CI will perform:
 
 ---
 
+## Contributing and support
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a change. For help, use the channels in
+[SUPPORT.md](./SUPPORT.md). Report security concerns privately as described in [SECURITY.md](./SECURITY.md).
+
+Project changes are recorded in [CHANGELOG.md](./CHANGELOG.md), and the repository's data practices are documented in
+[PRIVACY.md](./PRIVACY.md).
+
 ## License
 
 [MIT](./LICENSE) (unless otherwise stated in a specific example).
@@ -228,6 +266,7 @@ The CI will perform:
 
 ## Notes
 
-Many examples intentionally focus on **edge cases** and **failure modes** (data races, lifetime issues, ordering bugs). They are meant to be read, built, and experimented with.
+Many examples intentionally focus on **edge cases** and **failure modes** such as data races, lifetime issues, and
+ordering bugs. They are meant to be read, built, and experimented with.
 
 Contributions and [discussions](https://github.com/DoctorLai/cpp-coding-exercise/discussions) are welcome.

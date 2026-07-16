@@ -10,13 +10,14 @@ OPTFLAGS ?= -O1 -g           # Safe for ASAN/TSAN (default)
 # --------------------------
 # Default: AddressSanitizer
 SANITIZE ?= address
+COVERAGE ?= 0
 
 ifeq ($(SANITIZE),address)
     SAN_FLAGS := -fsanitize=address
 else ifeq ($(SANITIZE),thread)
     SAN_FLAGS := -fsanitize=thread
 else ifeq ($(SANITIZE),undefined)
-    SAN_FLAGS := -fsanitize=undefined
+    SAN_FLAGS := -fsanitize=undefined -fno-sanitize-recover=undefined
 else ifeq ($(SANITIZE),)
     SAN_FLAGS :=
 else
@@ -29,6 +30,11 @@ endif
 CXX := g++-14
 CXXFLAGS := -std=c++23 -Wall -Wextra -Werror $(OPTFLAGS) $(SAN_FLAGS)
 LDFLAGS  := $(SAN_FLAGS)
+
+ifeq ($(COVERAGE),1)
+    CXXFLAGS += --coverage
+    LDFLAGS  += --coverage
+endif
 
 # --------------------------
 # Usage notes

@@ -224,8 +224,8 @@ parse_positive_limit(const std::string& s)
 void
 print_usage(const char* program)
 {
-    std::cerr << "Usage: " << program << " <81-char-board> [max_solutions]\\n"
-              << "Board chars: 1-9 for fixed cells, '.' or '0' for empty cells.\\n";
+    std::cerr << "Usage: " << program << " <81-char-board> [max_solutions]\n"
+              << "Board chars: 1-9 for fixed cells, '.' or '0' for empty cells.\n";
 }
 
 } // namespace
@@ -242,7 +242,7 @@ main(int argc, char* argv[])
     if (argc == 3) {
         const auto parsed_limit = parse_positive_limit(argv[2]);
         if (!parsed_limit.has_value()) {
-            std::cerr << "Error: max_solutions must be a positive integer.\\n";
+            std::cerr << "Error: max_solutions must be a positive integer.\n";
             return 1;
         }
         max_solutions = *parsed_limit;
@@ -250,7 +250,7 @@ main(int argc, char* argv[])
 
     auto parsed_state = parse_board(argv[1]);
     if (!parsed_state.has_value()) {
-        std::cerr << "Error: invalid board input. Expected 81 chars and no row/column/box conflicts.\\n";
+        std::cerr << "Error: invalid board input. Expected 81 chars and no row/column/box conflicts.\n";
         return 1;
     }
 
@@ -259,13 +259,13 @@ main(int argc, char* argv[])
     solve_dfs(state, solutions, max_solutions);
 
     if (solutions.empty()) {
-        std::cout << "No solutions found.\\n";
+        std::cout << "No solutions found.\n";
         return 0;
     }
 
-    std::cout << "Found " << solutions.size() << " solution(s).\\n";
+    std::cout << "Found " << solutions.size() << " solution(s).\n";
     for (const auto& solution : solutions) {
-        std::cout << solution << "\\n";
+        std::cout << solution << "\n";
     }
 
     return 0;

@@ -12,7 +12,7 @@ struct Test
 int
 main()
 {
-    std::cout << "--- Testing SharedPtr ---\\n";
+    std::cout << "--- Testing SharedPtr ---\n";
     {
         SharedPtr<Test> sp1(new Test(10));
         assert(sp1->x == 10);
@@ -28,7 +28,7 @@ main()
     }
     std::cout << "SharedPtr test passed.\n";
 
-    std::cout << "--- Testing MakeShared ---\\n";
+    std::cout << "--- Testing MakeShared ---\n";
     {
         SharedPtr<Test> sp = MakeShared<Test>(20);
         assert(sp->x == 20);
@@ -36,7 +36,7 @@ main()
     }
     std::cout << "MakeShared test passed.\n";
 
-    std::cout << "--- Testing WeakPtr ---\\n";
+    std::cout << "--- Testing WeakPtr ---\n";
     {
         SharedPtr<Test> sp = MakeShared<Test>(30);
         WeakPtr<Test> wp = sp;

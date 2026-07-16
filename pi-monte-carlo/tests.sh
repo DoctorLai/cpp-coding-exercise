@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -ex
+set -euo pipefail
 
 # Run the tests
 pi=$(./pi-monte-carlo)
 
-# Check that the result is within a reasonable range
-if (( $(echo "$pi < 3.0" | bc -l) )) ||
-   (( $(echo "$pi > 3.2" | bc -l) )); then
+# Check that the result is numeric and within a reasonable range.
+if ! awk -v pi="$pi" 'BEGIN { exit !(pi ~ /^[0-9]+([.][0-9]+)?$/ && pi >= 3.0 && pi <= 3.2) }'; then
     echo "Test failed: pi is out of range: $pi"
     exit 1
-else
-    echo "Test passed: pi is within range: $pi"
 fi
+
+
+echo "Test passed: pi is within range: $pi"
