@@ -27,6 +27,7 @@ Examples include (and will expand to):
 * RAII and ownership patterns
 * Parallelism
     * [parallel-transform](./parallel-transform/)
+    * [parallel-integral-pi](./parallel-integral-pi/)
 * Performance‑oriented C++ idioms
 * STL and ranges:
     * [ranges-find-in-vector-string](./ranges-find-in-vector-string/)
